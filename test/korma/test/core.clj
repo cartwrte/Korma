@@ -591,6 +591,40 @@
          (select ent
                  (with subsel)))))
 
+(deftest sql-server-top-clause
+  (defentity blahblah
+    (table :blah :bb))
+  (sql-only
+   (are [result query] (= result query)
+     "SELECT TOP 200 \"ATable\".* FROM \"ATable\""
+     (select "ATable" (top 200)))
+   (are [result query] (= result query)
+     "SELECT TOP 200 \"bb\".* FROM \"blah\" AS \"bb\""
+     (select blahblah (top 200)))
+   (are [result query] (= result query)
+     "SELECT TOP 20 PERCENT \"bb\".* FROM \"blah\" AS \"bb\""
+     (select blahblah (top 20 :percent)))
+   (are [result query] (= result query)
+     "SELECT TOP 20 WITH TIES \"bb\".* FROM \"blah\" AS \"bb\""
+     (select blahblah (top 20 :with-ties)))
+   (are [result query] (= result query)
+     "SELECT TOP 20 PERCENT WITH TIES \"bb\".* FROM \"blah\" AS \"bb\""
+     (select blahblah (top 20 :with-ties :percent)))
+   (are [result query] (= result query)
+     "SELECT TOP 20 \"bb\".* FROM \"blah\" AS \"bb\""
+     (select blahblah (top 20 :ignored)))
+   (are [result query] (= result query)
+     "SELECT TOP 20 PERCENT WITH TIES \"bb\".* FROM \"blah\" AS \"bb\""
+     (select blahblah (top 20 :with-ties :ignored :percent)))))
+
+(deftest sql-server-distinct-clause
+  (defentity blahblah
+    (table :blah :bb))
+  (sql-only
+   (are [result query] (= result query)
+     "SELECT DISTINCT \"bb\".* FROM \"blah\" AS \"bb\""
+     (select blahblah (korma.core/distinct)))))
+
 (deftest multiple-aliases
   (defentity blahblah
     (table :blah :bb))

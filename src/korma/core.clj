@@ -416,6 +416,29 @@
   [query & modifiers]
   (update-in query [:modifiers] conj (reduce str modifiers)))
 
+(defn top
+  "Add the SQL Server TOP modifier to a SELECT clause:
+  
+  (select orders (top 5))
+  (select orders (top 5 :percent))
+  (select orders (top 5 :with-ties))
+  (select orders (top 5 :percent :with-ties))"
+  ([query n]
+   (modifier query "TOP " n))
+  ([query n & args]
+   (let [q1 (top query n)
+         q2 (if (:percent (set args))
+              (modifier q1 " PERCENT")
+              q1)
+         q3 (if (:with-ties (set args))
+              (modifier q2 " WITH TIES")
+              q2)]
+     q3)))
+
+(defn distinct
+  [query]
+  (modifier query "DISTINCT"))
+
 (defn raw
   "Embed a raw string of SQL in a query. This is used when Korma doesn't
   provide some specific functionality you're looking for:
