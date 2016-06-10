@@ -416,6 +416,7 @@
   [query & modifiers]
   (update-in query [:modifiers] conj (reduce str modifiers)))
 
+;; Perhaps better to add in as a separate dialect?
 (defn top
   "Add the SQL Server TOP modifier to a SELECT clause:
   
@@ -436,6 +437,9 @@
      q3)))
 
 (defn distinct
+  "Add a DISTINCT modifier to a SELECT clause:
+
+  (select orders (distinct))"
   [query]
   (modifier query "DISTINCT"))
 
